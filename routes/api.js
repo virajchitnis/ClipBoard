@@ -67,7 +67,7 @@ router.post('/:board/clips', function(req, res, next) {
 		});
 	}
 	else {
-		res.json({ error: "Error" });
+		res.json({ error: "Invalid owner (error code 001)." });
 	}
 });
 
