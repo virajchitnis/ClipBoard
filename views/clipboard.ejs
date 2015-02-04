@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><%= title %></title>
+	
+	<!-- Bootstrap css -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	
+	<!-- 'Ubuntu' from Google fonts -->
+	<link href='http://fonts.googleapis.com/css?family=Ubuntu:300' rel='stylesheet' type='text/css'>
+	
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+	
+	<!-- AngularJS -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
+	
+	<!-- Socket.io client -->
+	<script src="https://cdn.socket.io/socket.io-1.3.2.js"></script>
+	
+	<!-- App logic controller -->
+	<!--<script src="/javascripts/angular-socket.js"></script>-->
+	<!--<script src="/javascripts/index_app.js"></script>-->
+</head>
+<body>
+	<br>
+	<div class="container-fluid">
+		<div>
+			<h4>Title <small>User Name <small>12:10pm</small></small></h4>
+			<hr>
+			<pre>This is the copied text</pre>
+		</div>
+		<br>
+		<br>
+		<br>
+		<br>
+	</div>
+	
+	<div class="modal fade" id="username-modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Whats your name?</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<input type="text" class="form-control" id="username" placeholder="Enter your name">
+						<p class="help-block">Type your full name here. E.g. 'John Doe'. This helps identify who posted what.</p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="panel panel-default" style="position: fixed; bottom: 0px; left: -1px; width: calc(100% + 1px); margin-bottom: 0px; border-radius: 0px; box-shadow: 0px -3px 5px #ccc;">
+		<div class="panel-body">
+			<div class="input-group">
+				<input type="text" class="form-control" placeholder="Type here&hellip;">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button" data-toggle="modal" data-target="#username-modal">Go!</button>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<!-- jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	
+	<!-- Bootstrap JS -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>
