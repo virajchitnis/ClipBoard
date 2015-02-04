@@ -5,10 +5,29 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// Connection to MongoDB
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/ClipBoard', function(err) {
+    if(err) {
+        console.log('connection error', err);
+    } else {
+        console.log('connection successful');
+    }
+});
+
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var api = require('./routes/api');
 
 var app = express();
+
+// Socket.io setup for web sockets
+var http = require('http');
+var socketio = require('socket.io');
+var server = http.createServer(app);
+var io = socketio.listen(server);
+app.set('socketio', io);
+app.set('server', server);
+app.get('server').listen(3001);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +42,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
+app.use('/boards', api);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
