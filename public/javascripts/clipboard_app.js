@@ -10,6 +10,10 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		$scope.board = data;
 	});
 	
+	setTimeout( function() {
+		$('html, body').animate({scrollTop: $(document).height()}, 1000);
+	}, 150);
+	
 	if (getCookie("username") == "") {
 		setTimeout( function() {
 			$('#username-modal').modal('show');
@@ -18,6 +22,14 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	else {
 		$scope.username = getCookie("username");
 	}
+	
+	$socket.on('clip.added.' + $scope.board_id, function (data) {
+		var clips = $scope.board.clips;
+		clips.push(data);
+		$scope.board.clips = clips;
+		
+		$('html, body').animate({scrollTop: $(document).height()}, 1000);
+	});
 	
 	$scope.saveUsername = function() {
 		if ($scope.username >= 2) {
@@ -50,10 +62,6 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 			if (response.error) {
 				alert(response.error);
 			}
-			
-			$http.get('/boards/' + $scope.board_id).success(function(data) {
-				$scope.board = data;
-			});
 		});
 	};
 	

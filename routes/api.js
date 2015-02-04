@@ -45,6 +45,9 @@ router.post('/', function(req, res, next) {
 	board.save(function(err, board){
 		if(err){ return next(err); }
 		
+		var socketio = req.app.get('socketio');
+		socketio.sockets.emit('board.added', board);
+		
 		res.json(board);
 	});
 });
@@ -61,6 +64,9 @@ router.post('/:board/clips', function(req, res, next) {
 			req.board.clips.push(clip);
 			req.board.save(function(err, board) {
 				if(err){ return next(err); }
+				
+				var socketio = req.app.get('socketio');
+				socketio.sockets.emit('clip.added.' + req.board._id, clip);
 
 				res.json(clip);
 			});
