@@ -1,4 +1,17 @@
 var app = angular.module('app', ['socket.io']);
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13 && event.shiftKey) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
 app.config(['$socketProvider', function ($socketProvider) {
 	$socketProvider.setConnectionUrl('http://' + document.domain + ':3001');
 	$socketProvider.setTryMultipleTransports(false);
@@ -63,6 +76,8 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 				alert(response.error);
 			}
 		});
+		
+		$scope.textentry = "";
 	};
 	
 	$('#TextBoxId').keypress(function(e){
