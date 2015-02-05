@@ -45,7 +45,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	});
 	
 	$scope.saveUsername = function() {
-		if ($scope.username >= 2) {
+		if ($scope.username.length >= 2) {
 			setCookie("username", $scope.username, 365);
 			$('#username-modal').modal('hide');
 		}
