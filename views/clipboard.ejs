@@ -27,7 +27,7 @@
 	<br>
 	<div class="container-fluid">
 		<div ng-repeat="clip in board.clips">
-			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time}}</small></small></h4>
+			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
 			<hr>
 			<pre>{{clip.body}}</pre>
 		</div>

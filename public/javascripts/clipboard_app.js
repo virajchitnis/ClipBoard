@@ -12,6 +12,11 @@ app.directive('ngEnter', function () {
         });
     };
 });
+app.filter('toLocale', function () {
+	return function (item) {
+		return new Date(item).toLocaleString()
+	};
+});
 app.config(['$socketProvider', function ($socketProvider) {
 	$socketProvider.setConnectionUrl('http://' + document.domain + ':3001');
 	$socketProvider.setTryMultipleTransports(false);
@@ -41,7 +46,9 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		clips.push(data);
 		$scope.board.clips = clips;
 		
-		$('html, body').animate({scrollTop: $(document).height()}, 1000);
+		setTimeout( function() {
+			$('html, body').animate({scrollTop: $(document).height()}, 1000);
+		}, 150);
 	});
 	
 	$scope.saveUsername = function() {
