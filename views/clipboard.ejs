@@ -33,25 +33,26 @@
 	<script src="/javascripts/clipboard_app.js"></script>
 </head>
 <body ng-app="app" ng-controller="MainCtrl">
-	<br>
-	<!--<div class="container-fluid" style="text-align: center;">
+	<div class="container-fluid" style="text-align: center; position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; padding: 10px;">
 		<form class="form-inline">
 			<div class="form-group">
 				<div class="input-group">
 					<div class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></div>
-					<input type="text" class="form-control" id="exampleInputAmount" placeholder="Search">
+					<input type="text" class="form-control" id="exampleInputAmount" placeholder="Search" ng-model="clipSearch" ng-change="onSearchChange()">
 				</div>
 			</div>
 		</form>
 	</div>
-	<br>-->
+	<br>
+	<br>
+	<br>
+	<br>
 	<div class="container">
-		<div ng-repeat="clip in board.clips">
+		<div ng-repeat="clip in board.clips | filter:clipSearch">
 			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
 			<pre><code>{{clip.body}}</code></pre>
 			<hr>
 		</div>
-		<br>
 		<br>
 		<br>
 		<br>
@@ -76,14 +77,12 @@
 		</div>
 	</div>
 	
-	<div class="panel panel-default" style="position: fixed; bottom: 0px; left: -1px; width: calc(100% + 1px); margin-bottom: 0px; border-radius: 0px; box-shadow: 0px -3px 5px #ccc;">
-		<div class="panel-body">
-			<div class="input-group">
-				<textarea class="form-control" rows="1" placeholder="Type here&hellip;" ng-model="textentry" ng-enter="saveEnteredText()"></textarea>
-				<span class="input-group-btn">
-					<button class="btn btn-default" type="button" ng-click="saveEnteredText()">Go!</button>
-				</span>
-			</div>
+	<div class="container-fluid" style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-top: 1px solid #ccc; padding: 10px;">
+		<div class="input-group">
+			<textarea class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post&hellip;" ng-model="textentry" ng-enter="saveEnteredText()"></textarea>
+			<span class="input-group-btn">
+				<button class="btn btn-default" type="button" ng-click="saveEnteredText()">Post</button>
+			</span>
 		</div>
 	</div>
 	

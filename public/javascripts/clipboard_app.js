@@ -69,6 +69,14 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		}
 	});
 	
+	$scope.onSearchChange = function() {
+		setTimeout( function() {
+			$('pre code').each(function(i, block) {
+				hljs.highlightBlock(block);
+			});
+		}, 150);
+	};
+	
 	$scope.saveUsername = function() {
 		if ($scope.username.length >= 2) {
 			setCookie("username", $scope.username, 365);
