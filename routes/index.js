@@ -19,7 +19,7 @@ router.param('board', function(req, res, next, id) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'ClipBoard' });
 });
 
 /* GET clipboard page. */
