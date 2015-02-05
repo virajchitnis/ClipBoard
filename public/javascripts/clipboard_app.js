@@ -48,6 +48,10 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	}
 	
 	$socket.on('clip.added.' + $scope.board_id, function (data) {
+		var scrollPosition = $(document).scrollTop();
+		var pageHeight = $(document).height() - $(window).height();
+		var scrollOrNot = ((scrollPosition >= pageHeight) ? true : false);
+		
 		var clips = $scope.board.clips;
 		clips.push(data);
 		$scope.board.clips = clips;
@@ -58,9 +62,11 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 			});
 		}, 150);
 		
-		setTimeout( function() {
-			$('html, body').animate({scrollTop: $(document).height()}, 1000);
-		}, 150);
+		if (scrollOrNot || (data.owner == getCookie("username"))) {
+			setTimeout( function() {
+				$('html, body').animate({scrollTop: $(document).height()}, 1000);
+			}, 150);
+		}
 	});
 	
 	$scope.saveUsername = function() {
