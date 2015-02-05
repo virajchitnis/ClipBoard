@@ -32,6 +32,12 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		$('html, body').animate({scrollTop: $(document).height()}, 1000);
 	}, 150);
 	
+	setTimeout( function() {
+		$('pre code').each(function(i, block) {
+			hljs.highlightBlock(block);
+		});
+	}, 150);
+	
 	if (getCookie("username") == "") {
 		setTimeout( function() {
 			$('#username-modal').modal('show');
@@ -45,6 +51,12 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		var clips = $scope.board.clips;
 		clips.push(data);
 		$scope.board.clips = clips;
+		
+		setTimeout( function() {
+			$('pre code').each(function(i, block) {
+				hljs.highlightBlock(block);
+			});
+		}, 150);
 		
 		setTimeout( function() {
 			$('html, body').animate({scrollTop: $(document).height()}, 1000);

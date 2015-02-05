@@ -12,6 +12,15 @@
 	<link href='http://fonts.googleapis.com/css?family=Ubuntu:300' rel='stylesheet' type='text/css'>
 	
 	<link rel='stylesheet' href='/stylesheets/style.css' />
+	<style>
+	pre {
+		background-color: #f0f0f0;
+	}
+	</style>
+	
+	<!-- highlightjs -->
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
 	
 	<!-- AngularJS -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
@@ -25,10 +34,10 @@
 </head>
 <body ng-app="app" ng-controller="MainCtrl">
 	<br>
-	<div class="container-fluid">
+	<div class="container">
 		<div ng-repeat="clip in board.clips">
 			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
-			<pre>{{clip.body}}</pre>
+			<pre><code>{{clip.body}}</code></pre>
 			<hr>
 		</div>
 		<br>
