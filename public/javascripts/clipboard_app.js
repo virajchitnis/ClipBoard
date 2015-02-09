@@ -12,6 +12,19 @@ app.directive('ngEnter', function () {
         });
     };
 });
+app.directive('ngEsc', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 27) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEsc);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
 app.filter('toLocale', function () {
 	return function (item) {
 		return new Date(item).toLocaleString()
@@ -110,7 +123,12 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 			}
 		});
 		
+		$('#textAreaPaste').blur();
 		$scope.textentry = "";
+	};
+	
+	$scope.leaveTextArea = function() {
+		$('#textAreaPaste').blur();
 	};
 	
 	$('#TextBoxId').keypress(function(e){

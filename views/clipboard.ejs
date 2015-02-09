@@ -16,9 +16,6 @@
 	pre {
 		background-color: #f0f0f0;
 	}
-	#textAreaPaste {
-		height: 34px;
-	}
 	</style>
 	
 	<!-- highlightjs -->
@@ -36,7 +33,7 @@
 	<script src="/javascripts/clipboard_app.js"></script>
 </head>
 <body ng-app="app" ng-controller="MainCtrl">
-	<div class="container-fluid" style="text-align: center; position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; padding: 10px;">
+	<div id="searchBar" class="container-fluid" style="text-align: center; position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; padding: 10px; z-index: 5;">
 		<form class="form-inline">
 			<div class="form-group">
 				<div class="input-group">
@@ -80,8 +77,8 @@
 		</div>
 	</div>
 	
-	<div class="container-fluid" style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-top: 1px solid #ccc; padding: 10px;">
-		<textarea id="textAreaPaste" class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post&hellip;" ng-model="textentry" ng-enter="saveEnteredText()"></textarea>
+	<div class="container-fluid" style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-top: 1px solid #ccc; padding: 10px; z-index: 10;">
+		<textarea id="textAreaPaste" class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post or press Escape to cancel&hellip;" ng-model="textentry" ng-enter="saveEnteredText()" ng-esc="leaveTextArea()" style="height: 34px; resize: none;"></textarea>
 	</div>
 	
 	<!-- jQuery -->
@@ -91,20 +88,24 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	
 	<script>
+	var currentScrollPosition = -1;
+	var textAreaIsFullSize = false;
 	$(document).ready(function() {
-		var currentScrollPosition = -1;
 		$('#textAreaPaste').focus(function() {
+			var searchBarHeight = $('#searchBar').height();
 			$("#textAreaPaste").animate({
-				height: "200px"
+				height: ($(window).height() - 20) + "px"
 			}, 500, function() {
-				if ($(window).scrollTop() >= ($(document).height() - $(window).height())) {
+				textAreaIsFullSize = true;
+				$('body').css("overflow", "hidden");
+				/*if ($(window).scrollTop() >= ($(document).height() - $(window).height())) {
 					currentScrollPosition = $(document).scrollTop();
 					$('#postsList').append("<br><br><br><br><br><br><br><br>");
 					$('html, body').animate({scrollTop: $(document).height()}, 1000);
 				}
 				else {
 					currentScrollPosition = -1;
-				}
+				}*/
 			});
 		});
 		
@@ -112,14 +113,24 @@
 			$("#textAreaPaste").animate({
 				height: "34px"
 			}, 500, function() {
-				if (currentScrollPosition >= 0) {
+				textAreaIsFullSize = false;
+				$('body').css("overflow", "");
+				/*if (currentScrollPosition >= 0) {
 					$('html, body').animate({scrollTop: currentScrollPosition}, 500, function() {
 						$('#postsList').children("br").remove();
 						$('#postsList').append("<br><br><br>");
 					});
-				}
+				}*/
 			});
 		});
+	});
+	
+	$(window).resize(function() {
+		if (textAreaIsFullSize) {
+			$("#textAreaPaste").css({
+				height: ($(window).height() - 20) + "px"
+			});
+		}
 	});
 	</script>
 </body>
