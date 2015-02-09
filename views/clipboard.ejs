@@ -16,6 +16,9 @@
 	pre {
 		background-color: #f0f0f0;
 	}
+	#textAreaPaste {
+		height: 34px;
+	}
 	</style>
 	
 	<!-- highlightjs -->
@@ -47,7 +50,7 @@
 	<br>
 	<br>
 	<br>
-	<div class="container">
+	<div id="postsList" class="container">
 		<div ng-repeat="clip in board.clips | filter:clipSearch">
 			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
 			<pre><code>{{clip.body}}</code></pre>
@@ -78,12 +81,7 @@
 	</div>
 	
 	<div class="container-fluid" style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-top: 1px solid #ccc; padding: 10px;">
-		<div class="input-group">
-			<textarea class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post&hellip;" ng-model="textentry" ng-enter="saveEnteredText()"></textarea>
-			<span class="input-group-btn">
-				<button class="btn btn-default" type="button" ng-click="saveEnteredText()">Post</button>
-			</span>
-		</div>
+		<textarea id="textAreaPaste" class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post&hellip;" ng-model="textentry" ng-enter="saveEnteredText()"></textarea>
 	</div>
 	
 	<!-- jQuery -->
@@ -91,5 +89,38 @@
 	
 	<!-- Bootstrap JS -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	
+	<script>
+	$(document).ready(function() {
+		var currentScrollPosition = -1;
+		$('#textAreaPaste').focus(function() {
+			$("#textAreaPaste").animate({
+				height: "200px"
+			}, 500, function() {
+				if ($(window).scrollTop() >= ($(document).height() - $(window).height())) {
+					currentScrollPosition = $(document).scrollTop();
+					$('#postsList').append("<br><br><br><br><br><br><br><br>");
+					$('html, body').animate({scrollTop: $(document).height()}, 1000);
+				}
+				else {
+					currentScrollPosition = -1;
+				}
+			});
+		});
+		
+		$('#textAreaPaste').focusout(function() {
+			$("#textAreaPaste").animate({
+				height: "34px"
+			}, 500, function() {
+				if (currentScrollPosition >= 0) {
+					$('html, body').animate({scrollTop: currentScrollPosition}, 500, function() {
+						$('#postsList').children("br").remove();
+						$('#postsList').append("<br><br><br>");
+					});
+				}
+			});
+		});
+	});
+	</script>
 </body>
 </html>
