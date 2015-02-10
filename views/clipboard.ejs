@@ -50,7 +50,14 @@
 	<div id="postsList" class="container">
 		<div ng-repeat="clip in board.clips | filter:clipSearch">
 			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
-			<pre><code>{{clip.body}}</code></pre>
+			<pre ng-if="!clip.type"><code>{{clip.body}}</code></pre>
+			<div ng-if="clip.type && clip.type == 'git'" class="row">
+				<div class="col-md-2">
+					<img src="/images/github_logo.png" width="77">
+				</div>
+				<div class="col-md-10" ng-bind-html="getAsHTML(clip.body)">
+				</div>
+			</div>
 			<hr>
 		</div>
 		<br>

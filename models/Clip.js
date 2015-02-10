@@ -19,7 +19,8 @@ var ClipSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Board',
 		required: true
-	}
+	},
+	type: String
 });
 
 module.exports = mongoose.model('Clip', ClipSchema);

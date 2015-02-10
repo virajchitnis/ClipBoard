@@ -131,6 +131,10 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		$('#textAreaPaste').blur();
 	};
 	
+	$scope.getAsHTML = function(html) {
+		return $sce.trustAsHtml(html);
+	};
+	
 	$('#TextBoxId').keypress(function(e){
 		if(e.keyCode==13)
 			$('#linkadd').click();
