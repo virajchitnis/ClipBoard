@@ -104,4 +104,24 @@ router.post('/:board/git', function(req, res, next) {
 	});
 });
 
+/* POST (add) a new random clip */
+router.post('/:board/random', function(req, res, next) {
+	var clip = new Clip(req.body);
+	clip.board = req.board;
+	
+	clip.save(function(err, clip){
+		if(err){ return next(err); }
+
+		req.board.clips.push(clip);
+		req.board.save(function(err, board) {
+			if(err){ return next(err); }
+			
+			var socketio = req.app.get('socketio');
+			socketio.sockets.emit('clip.added.' + req.board._id, clip);
+
+			res.json(clip);
+		});
+	});
+});
+
 module.exports = router;

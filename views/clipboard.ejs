@@ -58,6 +58,13 @@
 				<div class="col-md-10" ng-bind-html="getAsHTML(clip.body)">
 				</div>
 			</div>
+			<div ng-if="clip.type && clip.type == 'deployment'" class="row">
+				<div class="col-md-2">
+					<img src="/images/git_logo.png" width="77">
+				</div>
+				<div class="col-md-10" ng-bind-html="getAsHTML(clip.body)">
+				</div>
+			</div>
 			<hr>
 		</div>
 		<br>
