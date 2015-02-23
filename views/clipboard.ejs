@@ -109,8 +109,13 @@
 	var textAreaIsFullSize = false;
 	$(document).ready(function() {
 		$('#textAreaPaste').focus(function() {
+			var textAreaPasteHeight = $(window).height() - 20;
+			if ($(window).width() < 768) {
+				textAreaPasteHeight = 110;
+			}
+			
 			$("#textAreaPaste").velocity({
-				height: ($(window).height() - 20) + "px"
+				height: textAreaPasteHeight + "px"
 			}, 500, function() {
 				textAreaIsFullSize = true;
 				$('body').css("overflow", "hidden");
