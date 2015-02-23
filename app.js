@@ -20,6 +20,10 @@ var api = require('./routes/api');
 
 var app = express();
 
+// Morgan setup
+var morgan = require('morgan');
+app.use(morgan('combined'));
+
 // Socket.io setup for web sockets
 var http = require('http');
 var socketio = require('socket.io');
