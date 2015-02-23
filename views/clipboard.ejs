@@ -80,7 +80,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<input type="text" class="form-control" id="username" placeholder="Enter your name" ng-model="username">
+						<input type="text" class="form-control" id="username" placeholder="Enter your name" ng-model="username" ng-enter="saveUsername()">
 						<p class="help-block">Type your full name here. E.g. 'John Doe'. This helps identify who posted what.</p>
 					</div>
 				</div>
@@ -92,7 +92,7 @@
 	</div>
 	
 	<div class="container-fluid" style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-top: 1px solid #ccc; padding: 10px; z-index: 10;">
-		<textarea id="textAreaPaste" class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post or press Escape to cancel&hellip;" ng-model="textentry" ng-enter="saveEnteredText()" ng-esc="leaveTextArea()" style="height: 34px; resize: none;"></textarea>
+		<textarea id="textAreaPaste" class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post or press Escape to cancel&hellip;" ng-model="textentry" ng-shift-enter="saveEnteredText()" ng-esc="leaveTextArea()" style="height: 34px; resize: none;"></textarea>
 	</div>
 	
 	<!-- jQuery -->

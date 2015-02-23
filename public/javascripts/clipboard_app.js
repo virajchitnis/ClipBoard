@@ -1,8 +1,21 @@
 var app = angular.module('app', ['socket.io']);
-app.directive('ngEnter', function () {
+app.directive('ngShiftEnter', function () {
     return function (scope, element, attrs) {
         element.bind("keydown keypress", function (event) {
             if(event.which === 13 && event.shiftKey) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngShiftEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
                 scope.$apply(function (){
                     scope.$eval(attrs.ngEnter);
                 });
@@ -43,7 +56,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	
 	setTimeout( function() {
 		$('html, body').animate({scrollTop: $(document).height()}, 1000);
-	}, 150);
+	}, 500);
 	
 	setTimeout( function() {
 		$('pre code').each(function(i, block) {
