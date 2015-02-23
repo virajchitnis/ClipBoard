@@ -21,6 +21,7 @@ var api = require('./routes/api');
 var app = express();
 
 // Morgan setup
+app.enable('trust proxy');
 var morgan = require('morgan');
 app.use(morgan('combined'));
 
