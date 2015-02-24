@@ -6,14 +6,22 @@ var BoardSchema = new mongoose.Schema({
 		required: true
 	},
 	members: [
-		String
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User'
+		}
 	],
 	clips: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Clip'
 		}
-	]
+	],
+	creation_date: {
+		type: Date,
+		default: Date.now
+	},
+	version: Number
 });
 
 module.exports = mongoose.model('Board', BoardSchema);
