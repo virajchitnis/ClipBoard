@@ -17,22 +17,29 @@ router.post('/', function(req, res, next) {
 
 				user.save(function(err, user) {
 					if(err){ return next(err); }
+					
+					if (user) {
+						// IMP: Create a new primary board for this user.
+						
+						var ret = {
+							email: user.email,
+							success: true
+						};
 	
-					var ret = {
-						email: user.email,
-						success: true
-					};
-	
-					res.json(ret);
+						res.json(ret);
+					}
+					else {
+						returnFailure("Error 003: User could not be created.");
+					}
 				});
 			}
 			else {
-				returnFailure("Account with selected email exists.");
+				returnFailure("Error 002: Account with selected email exists.");
 			}
 		});
 	}
 	else {
-		returnFailure("Please fill out all the fields in the form and make sure they are check marked.");
+		returnFailure("Error 001: Please fill out all the fields in the form and make sure they are check marked.");
 	}
 	
 	function validateEmail(email) {

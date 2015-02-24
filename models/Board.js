@@ -6,6 +6,9 @@ var BoardSchema = new mongoose.Schema({
 		required: true
 	},
 	members: [
+		String
+	],
+	users: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User'
