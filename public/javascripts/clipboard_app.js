@@ -38,6 +38,13 @@ app.directive('ngEsc', function () {
         });
     };
 });
+app.directive('ngRepeatLastItem', function() {
+	return function(scope, element, attrs) {
+		if (scope.$last && !scope.clip.received){
+			scope.$eval(attrs.ngRepeatLastItem);
+		}
+	};
+});
 app.filter('toLocale', function () {
 	return function (item) {
 		return new Date(item).toLocaleString()
@@ -54,16 +61,6 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		$scope.board = data;
 	});
 	
-	setTimeout( function() {
-		$('html, body').animate({scrollTop: $(document).height()}, 1000);
-	}, 500);
-	
-	setTimeout( function() {
-		$('pre code').each(function(i, block) {
-			hljs.highlightBlock(block);
-		});
-	}, 150);
-	
 	if (getCookie("username") == "") {
 		setTimeout( function() {
 			$('#username-modal').modal('show');
@@ -74,33 +71,41 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	}
 	
 	$socket.on('clip.added.' + $scope.board_id, function (data) {
-		var scrollPosition = $(document).scrollTop();
-		var pageHeight = $(document).height() - $(window).height();
-		var scrollOrNot = ((scrollPosition >= pageHeight) ? true : false);
-		
+		data.received = true;
 		var clips = $scope.board.clips;
 		clips.push(data);
 		$scope.board.clips = clips;
 		
-		setTimeout( function() {
-			$('pre code').each(function(i, block) {
-				hljs.highlightBlock(block);
-			});
-		}, 150);
-		
-		if (scrollOrNot || (data.owner == getCookie("username"))) {
-			setTimeout( function() {
-				$('html, body').animate({scrollTop: $(document).height()}, 1000);
-			}, 150);
-		}
+		$scope.repeatLastItemCallBack(data);
 	});
 	
-	$scope.onSearchChange = function() {
-		setTimeout( function() {
+	$scope.repeatLastItemCallBack = function(data) {
+		setTimeout(function() {
 			$('pre code').each(function(i, block) {
 				hljs.highlightBlock(block);
 			});
+			
+			var scrollPosition = $(document).scrollTop();
+			var pageHeight = $(document).height() - $(window).height();
+			var scrollOrNot = ((scrollPosition >= pageHeight) ? true : false);
+		
+			if (data) {
+				if (scrollOrNot || (data.owner == getCookie("username"))) {
+					$('html, body').animate({scrollTop: $(document).height()}, 1000);
+				}
+			}
+			else {
+				$('html, body').animate({scrollTop: $(document).height()}, 1000);
+			}
 		}, 150);
+	};
+	
+	$scope.onSearchChange = function() {
+		setTimeout(function() {
+			$('pre code').each(function(i, block) {
+				hljs.highlightBlock(block);
+			});
+		}, 50);
 	};
 	
 	$scope.saveUsername = function() {

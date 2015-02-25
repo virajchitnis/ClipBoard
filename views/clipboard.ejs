@@ -48,7 +48,7 @@
 	<br>
 	<br>
 	<div id="postsList" class="container">
-		<div ng-repeat="clip in board.clips | filter:clipSearch">
+		<div ng-repeat="clip in board.clips | filter:clipSearch" ng-repeat-last-item="repeatLastItemCallBack()">
 			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
 			<pre ng-if="!clip.type"><code>{{clip.body}}</code></pre>
 			<div ng-if="clip.type && clip.type == 'git'" class="row">

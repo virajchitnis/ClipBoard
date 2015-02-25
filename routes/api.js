@@ -79,7 +79,6 @@ router.post('/:board/clips', function(req, res, next) {
 
 /* POST (add) a new git clip */
 router.post('/:board/git', function(req, res, next) {
-	console.log(req.body);
 	var received = {
 		owner: req.body.pull_request.user.login,
 		body: "<h5>" + req.body.action + " pull request <a href=\"" + req.body.pull_request.html_url + "\">#" + req.body.number + "</a></h5><p>" + req.body.pull_request.title + "</p>",
