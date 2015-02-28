@@ -16,10 +16,7 @@ router.post('/', function(req, res, next) {
 			if (!existing_user) {
 				var user = new User(req.body);
 				var board = new Board({
-					name: "Your clipboard",
-					users: [
-						user.email
-					]
+					name: "Your clipboard"
 				});
 				user.primary_board = board;
 				
@@ -86,10 +83,14 @@ router.param('token', function(req, res, next, token) {
 		if (login && !login.logout_date) {
 			User.findOne({ 'email': login.email }, function (err, user) {
 				if(err){ return next(err); }
-				if (!user) { return next(new Error("can't find user")); }
-		
-				req.user = user;
-				return next();
+				
+				if (user) {
+					req.user = user;
+					return next();
+				}
+				else {
+					return next();
+				}
 			});
 		}
 		else {
@@ -103,12 +104,23 @@ router.get('/:token', function(req, res) {
 	if (req.user) {
 		req.user.populate('primary_board', function(err, board) {
 			req.user.populate('secondary_boards', function(err, board) {
-				res.json({
-					email: req.user.email,
-					first_name: req.user.first_name,
-					last_name: req.user.last_name,
-					primary_board: req.user.primary_board,
-					secondary_boards: req.user.secondary_boards
+				Board.find({ users: req.user.email }, function(err, boards) {
+					if(err) { return next(err); }
+					
+					if (boards && boards.length > 0) {
+						for (var i = 0; i < boards.length; i++) {
+							console.log(boards[i]);
+							req.user.secondary_boards.push(boards[i]);
+						}
+					}
+					
+					res.json({
+						email: req.user.email,
+						first_name: req.user.first_name,
+						last_name: req.user.last_name,
+						primary_board: req.user.primary_board,
+						secondary_boards: req.user.secondary_boards
+					});
 				});
 			});
 		});
