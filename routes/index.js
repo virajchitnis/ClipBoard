@@ -21,7 +21,39 @@ router.param('board', function(req, res, next, id) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.render('index', { title: 'ClipBoard' });
+	if (req.cookies.token) {
+		Login.findById(req.cookies.token, function (err, login) {
+			if (err) return next(err);
+			
+			if (login && !login.logout_date) {
+				User.findOne({ 'email': login.email }, function(err, user) {
+					if (err) return next(err);
+				
+					if (user) {
+						returnIndexPage();
+					}
+					else {
+						returnLoginPage();
+					}
+				});
+			}
+			else {
+				returnLoginPage();
+			}
+		});
+	}
+	else {
+		returnLoginPage();
+	}
+	
+	function returnIndexPage() {
+		res.render('index', { title: 'ClipBoard' });
+	}
+	
+	function returnLoginPage() {
+		res.status(401);
+		res.send("<script type='text/javascript'>window.location.replace('/login');</script>");
+	}
 });
 
 /* GET login page. */
@@ -62,7 +94,39 @@ router.get('/login', function(req, res, next) {
 
 /* GET clipboard page. */
 router.get('/clipboard/:board', function(req, res, next) {
-	res.render('clipboard', { title: req.board.name + ' - ClipBoard' });
+	if (req.cookies.token) {
+		Login.findById(req.cookies.token, function (err, login) {
+			if (err) return next(err);
+			
+			if (login && !login.logout_date) {
+				User.findOne({ 'email': login.email }, function(err, user) {
+					if (err) return next(err);
+				
+					if (user) {
+						returnClipBoardPage();
+					}
+					else {
+						returnLoginPage();
+					}
+				});
+			}
+			else {
+				returnLoginPage();
+			}
+		});
+	}
+	else {
+		returnLoginPage();
+	}
+	
+	function returnClipBoardPage() {
+		res.render('clipboard', { title: req.board.name + ' - ClipBoard' });
+	}
+	
+	function returnLoginPage() {
+		res.status(401);
+		res.send("<script type='text/javascript'>window.location.replace('/login');</script>");
+	}
 });
 
 module.exports = router;
