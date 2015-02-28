@@ -175,7 +175,8 @@ router.post('/login', function(req, res, next) {
 					
 						var ret = {
 							success: true,
-							token: login._id
+							token: login._id,
+							username: user.first_name + " " + user.last_name
 						}
 
 						res.json(ret);

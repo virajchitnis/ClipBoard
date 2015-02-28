@@ -185,6 +185,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 			var response = data;
 			if (response.success) {
 				setCookie("token", response.token, 30);
+				setCookie("username", response.username, 30);
 				window.location = "/";
 				
 				$('#login-progress-modal').modal('hide');
