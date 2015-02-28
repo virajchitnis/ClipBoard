@@ -21,7 +21,10 @@ var BoardSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	},
-	version: Number
+	version: {
+		type: Number,
+		default: 1
+	}
 });
 
 module.exports = mongoose.model('Board', BoardSchema);

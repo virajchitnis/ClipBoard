@@ -20,7 +20,15 @@ var ClipSchema = new mongoose.Schema({
 		ref: 'Board',
 		required: true
 	},
-	type: String
+	type: String,
+	creation_date: {
+		type: Date,
+		default: Date.now
+	},
+	version: {
+		type: Number,
+		default: 1
+	}
 });
 
 module.exports = mongoose.model('Clip', ClipSchema);

@@ -19,8 +19,7 @@ router.post('/', function(req, res, next) {
 					name: "Your clipboard",
 					users: [
 						user.email
-					],
-					version: 1
+					]
 				});
 				user.primary_board = board;
 				
