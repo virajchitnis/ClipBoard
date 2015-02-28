@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Login - <%= title %></title>
+	
+	<!-- Bootstrap css -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	
+	<!-- 'Ubuntu' from Google fonts -->
+	<link href='http://fonts.googleapis.com/css?family=Ubuntu:300' rel='stylesheet' type='text/css'>
+	
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+	<link rel='stylesheet' href='/stylesheets/index.css' />
+	
+	<!-- AngularJS -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
+	
+	<!-- Socket.io client -->
+	<script src="https://cdn.socket.io/socket.io-1.3.2.js"></script>
+	
+	<!-- App logic controller -->
+	<script src="/javascripts/angular-socket.js"></script>
+	<script src="/javascripts/login_app.js"></script>
+</head>
+<body ng-app="app" ng-controller="MainCtrl">
+	<div class="page-header">
+		<h1><%= title %> <small>by Viraj Chitnis</small></h1>
+	</div>
+	<div class="container-fluid">
+		<div class="panel panel-default" style="width: 300px; margin: 0 auto;">
+			<div class="panel-heading">
+				<h3 class="panel-title">Login</h3>
+			</div>
+			<div class="panel-body">
+				<form>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="loginEmail">
+					</div>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input type="password" class="form-control" id="password" placeholder="Password" ng-model="loginPassword">
+					</div>
+					<a class="btn btn-primary" href="#" role="button" style="float: right;" ng-click="userLogin()">Login</a>
+					<a class="btn btn-success" href="#" role="button" style="float: right; margin-right: 5px;" data-toggle="modal" data-target="#signup-modal">Signup</a>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="signup-modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Signup for <%= title %></h4>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group has-feedback" ng-class="firstNameCSSClasses">
+							<label for="firstName">First name *</label>
+							<input type="text" class="form-control" placeholder="Enter first name" ng-model="firstName" ng-change="validateFirstName()">
+							<span class="glyphicon form-control-feedback" aria-hidden="true" ng-class="firstNameGlyphicon"></span>
+						</div>
+						<div class="form-group has-feedback" ng-class="lastNameCSSClasses">
+							<label for="lastName">Last name *</label>
+							<input type="text" class="form-control" placeholder="Enter last name" ng-model="lastName" ng-change="validateLastName()">
+							<span class="glyphicon form-control-feedback" aria-hidden="true" ng-class="lastNameGlyphicon"></span>
+						</div>
+						<div class="form-group has-feedback" ng-class="emailCSSClasses">
+							<label for="email">Email *</label>
+							<input type="email" class="form-control" placeholder="Enter email" ng-model="email" ng-change="emailChanged()">
+							<span class="glyphicon form-control-feedback" aria-hidden="true" ng-class="emailGlyphicon"></span>
+							<p class="help-block" ng-if="!emailAvailable">The entered email is already taken, please enter another.</p>
+						</div>
+						<div class="form-group has-feedback" ng-class="passwordCSSClasses">
+							<label for="password">Password *</label>
+							<input type="password" class="form-control" placeholder="Enter password" ng-model="password" ng-change="validatePassword()">
+							<span class="glyphicon form-control-feedback" aria-hidden="true" ng-class="passwordGlyphicon"></span>
+							<p class="help-block">The password must be at least 8 characters long, must have at least one of each, a number, an upper case letter and a lower case letter</p>
+						</div>
+						<div class="form-group has-feedback" ng-class="passwordRepeatCSSClasses">
+							<label for="passwordRepeat">Repeat password *</label>
+							<input type="password" class="form-control" placeholder="Repeat password" ng-model="passwordRepeat" ng-change="validatePasswordRepeat()">
+							<span class="glyphicon form-control-feedback" aria-hidden="true" ng-class="passwordRepeatGlyphicon"></span>
+							<p class="help-block" ng-if="!passwordsMatch">Passwords do not match</p>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" ng-click="submitNewUser()">Done</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="login-progress-modal">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">{{responseTitle}}</h4>
+				</div>
+				<div class="modal-body">
+					<p>{{responseMessage}}</p>
+				</div>
+				<div class="modal-footer" ng-if="responseMessageClosable">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	
+	<!-- Bootstrap JS -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

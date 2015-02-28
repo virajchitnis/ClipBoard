@@ -5,6 +5,8 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Board = require('../models/Board.js');
 var Clip = require('../models/Clip.js');
+var Login = require('../models/Login.js');
+var User = require('../models/User.js');
 
 /* PARAM (method) for retrieving a board by its id */
 router.param('board', function(req, res, next, id) {
@@ -19,12 +21,48 @@ router.param('board', function(req, res, next, id) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'ClipBoard' });
+	res.render('index', { title: 'ClipBoard' });
+});
+
+/* GET login page. */
+router.get('/login', function(req, res, next) {
+	if (req.cookies.token) {
+		Login.findById(req.cookies.token, function (err, login) {
+			if (err) return next(err);
+			
+			if (login) {
+				User.findOne({ 'email': login.email }, function(err, user) {
+					if (err) return next(err);
+				
+					if (user) {
+						returnIndexPage();
+					}
+					else {
+						returnLoginPage();
+					}
+				});
+			}
+			else {
+				returnLoginPage();
+			}
+		});
+	}
+	else {
+		returnLoginPage();
+	}
+	
+	function returnIndexPage() {
+		res.send("<script type='text/javascript'>window.location.replace('/');</script>");
+	}
+	
+	function returnLoginPage() {
+		res.render('login', { title: 'ClipBoard' });
+	}
 });
 
 /* GET clipboard page. */
 router.get('/clipboard/:board', function(req, res, next) {
-  res.render('clipboard', { title: req.board.name + ' - ClipBoard' });
+	res.render('clipboard', { title: req.board.name + ' - ClipBoard' });
 });
 
 module.exports = router;
