@@ -9,10 +9,7 @@ var BoardSchema = new mongoose.Schema({
 		String
 	],
 	users: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'User'
-		}
+		String
 	],
 	clips: [
 		{

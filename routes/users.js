@@ -5,6 +5,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var User = require('../models/User.js');
 var Login = require('../models/Login.js');
+var Board = require('../models/Board.js');
 
 /* POST add a new user. */
 router.post('/', function(req, res, next) {
@@ -14,22 +15,37 @@ router.post('/', function(req, res, next) {
 		
 			if (!existing_user) {
 				var user = new User(req.body);
-
-				user.save(function(err, user) {
+				var board = new Board({
+					name: "Your clipboard",
+					users: [
+						user.email
+					],
+					version: 1
+				});
+				user.primary_board = board;
+				
+				board.save(function(err, board) {
 					if(err){ return next(err); }
 					
-					if (user) {
-						// IMP: Create a new primary board for this user.
-						
-						var ret = {
-							email: user.email,
-							success: true
-						};
+					if (board) {
+						user.save(function(err, user) {
+							if(err){ return next(err); }
+					
+							if (user) {
+								var ret = {
+									email: user.email,
+									success: true
+								};
 	
-						res.json(ret);
+								res.json(ret);
+							}
+							else {
+								returnFailure("Error 004: User could not be created.");
+							}
+						});
 					}
 					else {
-						returnFailure("Error 003: User could not be created.");
+						returnFailure("Error 003: User's primary board could not be created.");
 					}
 				});
 			}
@@ -96,7 +112,7 @@ router.post('/login', function(req, res, next) {
 				if (isMatch) {
 					var received_data = {
 						email: req.body.email,
-						user_agent: req.body.user_agent
+						user_agent: req.headers['user-agent']
 					};
 	
 					var login = new Login(received_data);
@@ -128,6 +144,25 @@ router.post('/login', function(req, res, next) {
 		};
 		res.json(ret);
 	}
+});
+
+/* POST mark the provided token as logged out. */
+router.post('/logout', function(req, res, next) {
+	var currDateTime = Date.now();
+	Login.findByIdAndUpdate(req.body.token, { logout_date: currDateTime }, function(err, login) {
+		if(err){ return next(err); }
+		
+		if (login) {
+			res.json({
+				success: true
+			});
+		}
+		else {
+			res.json({
+				success: false
+			});
+		}
+	});
 });
 
 module.exports = router;

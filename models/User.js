@@ -22,7 +22,8 @@ var UserSchema = new mongoose.Schema({
 	},
 	primary_board: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Board'
+		ref: 'Board',
+		required: true
 	},
 	secondary_boards: [
 		{
