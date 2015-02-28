@@ -78,6 +78,49 @@ router.post('/', function(req, res, next) {
 	}
 });
 
+/* PARAM (method) for retrieving a board by its id */
+router.param('token', function(req, res, next, token) {
+	Login.findById(token, function(err, login) {
+		if(err){ return next(err); }
+		
+		if (login && !login.logout_date) {
+			User.findOne({ 'email': login.email }, function (err, user) {
+				if(err){ return next(err); }
+				if (!user) { return next(new Error("can't find user")); }
+		
+				req.user = user;
+				return next();
+			});
+		}
+		else {
+			return next();
+		}
+	});
+});
+
+/* GET a particular user by email */
+router.get('/:token', function(req, res) {
+	if (req.user) {
+		req.user.populate('primary_board', function(err, board) {
+			req.user.populate('secondary_boards', function(err, board) {
+				res.json({
+					email: req.user.email,
+					first_name: req.user.first_name,
+					last_name: req.user.last_name,
+					primary_board: req.user.primary_board,
+					secondary_boards: req.user.secondary_boards
+				});
+			});
+		});
+	}
+	else {
+		res.json({
+			success: false,
+			message: "Error 005: Invalid token."
+		});
+	}
+});
+
 /* POST check if email is already taken. */
 router.post('/email', function(req, res, next) {
 	User.findOne({ 'email': req.body.email }, function(err, existing_user) {
