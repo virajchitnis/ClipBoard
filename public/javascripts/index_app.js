@@ -4,8 +4,14 @@ app.config(['$socketProvider', function ($socketProvider) {
 	$socketProvider.setTryMultipleTransports(false);
 }]);
 app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scope, $http, $sce, $socket) {
-	$http.get('/boards').success(function(data) {
-		$scope.boards = data;
+	$http.get('/users/' + $.cookie('token')).success(function(data) {
+		var tempBoards = [];
+		tempBoards.push(data.primary_board);
+		for (var i = 0; i < data.secondary_boards.length; i++) {
+			tempBoards.push(data.secondary_boards[i]);
+		}
+		$scope.boards = tempBoards;
+		console.log(tempBoards);
 	});
 	
 	$socket.on('board.added', function (data) {
