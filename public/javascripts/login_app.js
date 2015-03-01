@@ -1,4 +1,17 @@
 var app = angular.module('app', ['socket.io']);
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
 app.config(['$socketProvider', function ($socketProvider) {
 	$socketProvider.setConnectionUrl('http://' + document.domain + ':3001');
 	$socketProvider.setTryMultipleTransports(false);
@@ -165,6 +178,9 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	};
 	
 	$scope.userLogin = function() {
+		$('#email').blur();
+		$('#password').blur();
+		
 		var login = {
 			email: $scope.loginEmail,
 			password: $scope.loginPassword
@@ -202,6 +218,11 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 				});
 			}
 		});
+	};
+	
+	$scope.selectPasswordField = function() {
+		$('#email').blur();
+		$('#password').focus();
 	};
 	
 	function validateEmail(email) {

@@ -37,11 +37,11 @@
 				<form>
 					<div class="form-group">
 						<label for="email">Email</label>
-						<input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="loginEmail">
+						<input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="loginEmail" ng-enter="selectPasswordField()">
 					</div>
 					<div class="form-group">
 						<label for="password">Password</label>
-						<input type="password" class="form-control" id="password" placeholder="Password" ng-model="loginPassword">
+						<input type="password" class="form-control" id="password" placeholder="Password" ng-model="loginPassword" ng-enter="userLogin()">
 					</div>
 					<a class="btn btn-primary" href="#" role="button" style="float: right;" ng-click="userLogin()">Login</a>
 					<a class="btn btn-success" href="#" role="button" style="float: right; margin-right: 5px;" data-toggle="modal" data-target="#signup-modal">Signup</a>
