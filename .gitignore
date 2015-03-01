@@ -31,3 +31,6 @@ npm-debug.log
 
 # Config file
 config.json
+
+# Public javascripts directory, will be dynamically generated at runtime
+public/javascripts
