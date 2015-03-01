@@ -101,30 +101,53 @@ router.param('token', function(req, res, next, token) {
 
 /* GET a particular user by email */
 router.get('/:token', function(req, res) {
-	if (req.user) {
-		req.user.populate('primary_board', function(err, board) {
-			req.user.populate('secondary_boards', function(err, board) {
-				Board.find({ users: req.user.email }, function(err, boards) {
-					if(err) { return next(err); }
+	if (req.cookies.token) {
+		Login.findById(req.cookies.token, function (err, login) {
+			if (err) return next(err);
+			
+			if (login && !login.logout_date) {
+				if (login._id == req.params.token) {
+					if (req.user) {
+						req.user.populate('primary_board', function(err, board) {
+							req.user.populate('secondary_boards', function(err, board) {
+								Board.find({ users: req.user.email }, function(err, boards) {
+									if(err) { return next(err); }
 					
-					if (boards && boards.length > 0) {
-						for (var i = 0; i < boards.length; i++) {
-							req.user.secondary_boards.push(boards[i]);
-						}
+									if (boards && boards.length > 0) {
+										for (var i = 0; i < boards.length; i++) {
+											req.user.secondary_boards.push(boards[i]);
+										}
+									}
+					
+									res.json({
+										email: req.user.email,
+										first_name: req.user.first_name,
+										last_name: req.user.last_name,
+										primary_board: req.user.primary_board,
+										secondary_boards: req.user.secondary_boards
+									});
+								});
+							});
+						});
 					}
-					
-					res.json({
-						email: req.user.email,
-						first_name: req.user.first_name,
-						last_name: req.user.last_name,
-						primary_board: req.user.primary_board,
-						secondary_boards: req.user.secondary_boards
-					});
-				});
-			});
+					else {
+						returnError();
+					}
+				}
+				else {
+					returnError();
+				}
+			}
+			else {
+				returnError();
+			}
 		});
 	}
 	else {
+		returnError();
+	}
+	
+	function returnError() {
 		res.json({
 			success: false,
 			message: "Error 005: Invalid token."

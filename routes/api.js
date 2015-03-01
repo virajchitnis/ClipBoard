@@ -8,30 +8,12 @@ var Clip = require('../models/Clip.js');
 var Login = require('../models/Login.js');
 var User = require('../models/User.js');
 
-/* PARAM (method) for retrieving a board by its id */
-router.param('board', function(req, res, next, id) {
-	var query = Board.findById(id, function (err, board) {
-		if(err){ return next(err); }
-		if (!board) { return next(new Error("can't find board")); }
-		
-		req.board = board;
-		return next();
-	});
-});
-
 /* GET all boards. */
 router.get('/', function(req, res, next) {
 	Board.find(function (err, boards) {
 		if (err) return next(err);
 		
 		res.json(boards);
-	});
-});
-
-/* GET a particular board by its id */
-router.get('/:board', function(req, res) {
-	req.board.populate('clips', function(err, clip) {
-		res.json(req.board);
 	});
 });
 
@@ -54,65 +36,162 @@ router.post('/', function(req, res, next) {
 	});
 });
 
+/* PARAM (method) for retrieving a board by its id */
+router.param('board', function(req, res, next, id) {
+	var query = Board.findById(id, function (err, board) {
+		if(err){ return next(err); }
+		
+		if (board) {
+			req.board = board;
+			return next();
+		}
+		else {
+			return next();
+		}
+	});
+});
+
+/* GET a particular board by its id */
+router.get('/:board', function(req, res) {
+	if (req.board) {
+		if (req.cookies.token) {
+			Login.findById(req.cookies.token, function (err, login) {
+				if (err) return next(err);
+			
+				if (login && !login.logout_date) {
+					User.findOne({ 'email': login.email }, function(err, user) {
+						if (err) return next(err);
+				
+						if (user) {
+							user.populate('primary_board', function(err, board) {
+								user.populate('secondary_boards', function(err, board) {
+									Board.find({ users: user.email }, function(err, boards) {
+										if(err) { return next(err); }
+									
+										if (req.board._id.equals(user.primary_board._id)) {
+											returnBoardData();
+										}
+										else {
+											if (boards && boards.length > 0) {
+												for (var i = 0; i < boards.length; i++) {
+													user.secondary_boards.push(boards[i]);
+												}
+											}
+										
+											var authorizedOrNot = false;
+											for (var i = 0; i < user.secondary_boards.length; i++) {
+												if (req.board._id.equals(user.secondary_boards[i]._id)) {
+													authorizedOrNot = true;
+												}
+											}
+										
+											if (authorizedOrNot) {
+												returnBoardData();
+											}
+											else {
+												returnError("Error 006: Unauthorized access.");
+											}
+										}
+									});
+								});
+							});
+						}
+						else {
+							returnError("Error 006: Unauthorized access.");
+						}
+					});
+				}
+				else {
+					returnError("Error 006: Unauthorized access.");
+				}
+			});
+		}
+		else {
+			returnError("Error 006: Unauthorized access.");
+		}
+	}
+	else {
+		returnError("Error 005: Invalid board ID.");
+	}
+	
+	function returnBoardData() {
+		req.board.populate('clips', function(err, clip) {
+			res.json(req.board);
+		});
+	}
+	
+	function returnError(msg) {
+		res.json({
+			success: false,
+			message: msg
+		});
+	}
+});
+
 /* POST (add) a new clip */
 router.post('/:board/clips', function(req, res, next) {
 	var clip = new Clip(req.body);
 	clip.board = req.board;
 	
-	if (req.cookies.token) {
-		Login.findById(req.cookies.token, function (err, login) {
-			if (err) return next(err);
+	if (req.board) {
+		if (req.cookies.token) {
+			Login.findById(req.cookies.token, function (err, login) {
+				if (err) return next(err);
 			
-			if (login && !login.logout_date) {
-				User.findOne({ 'email': login.email }, function(err, user) {
-					if (err) return next(err);
+				if (login && !login.logout_date) {
+					User.findOne({ 'email': login.email }, function(err, user) {
+						if (err) return next(err);
 				
-					if (user) {
-						user.populate('primary_board', function(err, board) {
-							user.populate('secondary_boards', function(err, board) {
-								Board.find({ users: user.email }, function(err, boards) {
-									if(err) { return next(err); }
+						if (user) {
+							user.populate('primary_board', function(err, board) {
+								user.populate('secondary_boards', function(err, board) {
+									Board.find({ users: user.email }, function(err, boards) {
+										if(err) { return next(err); }
 									
-									if (req.board._id.equals(user.primary_board._id)) {
-										addClip();
-									}
-									else {
-										if (boards && boards.length > 0) {
-											for (var i = 0; i < boards.length; i++) {
-												user.secondary_boards.push(boards[i]);
-											}
-										}
-										
-										var authorizedOrNot = false;
-										for (var i = 0; i < user.secondary_boards.length; i++) {
-											if (req.board._id.equals(user.secondary_boards[i]._id)) {
-												authorizedOrNot = true;
-											}
-										}
-										
-										if (authorizedOrNot) {
+										if (req.board._id.equals(user.primary_board._id)) {
 											addClip();
 										}
 										else {
-											returnError();
+											if (boards && boards.length > 0) {
+												for (var i = 0; i < boards.length; i++) {
+													user.secondary_boards.push(boards[i]);
+												}
+											}
+										
+											var authorizedOrNot = false;
+											for (var i = 0; i < user.secondary_boards.length; i++) {
+												if (req.board._id.equals(user.secondary_boards[i]._id)) {
+													authorizedOrNot = true;
+												}
+											}
+										
+											if (authorizedOrNot) {
+												addClip();
+											}
+											else {
+												returnError("Error 006: Unauthorized access.");
+											}
 										}
-									}
+									});
 								});
 							});
-						});
-					}
-					else {
-						returnError();
-					}
-				});
-			}
-			else {
-				returnError();
-			}
-		});
+						}
+						else {
+							returnError("Error 006: Unauthorized access.");
+						}
+					});
+				}
+				else {
+					returnError("Error 006: Unauthorized access.");
+				}
+			});
+		}
+		else {
+			returnError("Error 006: Unauthorized access.");
+		}
 	}
 	else {
-		returnError();
+		returnError("Error 005: Invalid board ID.");
 	}
 	
 	function addClip() {
@@ -131,8 +210,8 @@ router.post('/:board/clips', function(req, res, next) {
 		});
 	}
 	
-	function returnError() {
-		res.json({ error: "Invalid owner (error code 001)." });
+	function returnError(msg) {
+		res.json({ error: msg });
 	}
 });
 
