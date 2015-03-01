@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var fs = require('fs');
+var configJSON = require('./config.json');
 
 // Connection to MongoDB
 var mongoose = require('mongoose');
@@ -14,6 +16,18 @@ mongoose.connect('mongodb://localhost/ClipBoard', function(err) {
 		console.log('connection successful');
 	}
 });
+
+// Copy javascript files into their correct location
+if (!fs.existsSync('./public/javascripts')) {
+	fs.mkdirSync('./public/javascripts');
+}
+var jsFiles = fs.readdirSync('./src/javascripts');
+for (var i = 0; i < jsFiles.length; i++) {
+	var currjsFile = jsFiles[i];
+	var fileContents = fs.readFileSync('./src/javascripts/' + currjsFile, 'utf8');
+	var outputContents = fileContents.replace('[[% socket_port %]]', configJSON.socket_port);
+	fs.writeFileSync('./public/javascripts/' + currjsFile, outputContents);
+}
 
 var routes = require('./routes/index');
 var api = require('./routes/api');
@@ -33,7 +47,7 @@ var server = http.createServer(app);
 var io = socketio.listen(server);
 app.set('socketio', io);
 app.set('server', server);
-app.get('server').listen(3001);
+app.get('server').listen(configJSON.socket_port);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

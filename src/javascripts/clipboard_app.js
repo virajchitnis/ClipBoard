@@ -44,7 +44,7 @@ app.filter('toLocale', function () {
 	};
 });
 app.config(['$socketProvider', function ($socketProvider) {
-	$socketProvider.setConnectionUrl('http://' + document.domain + ':3001');
+	$socketProvider.setConnectionUrl('http://' + document.domain + ':[[% socket_port %]]');
 	$socketProvider.setTryMultipleTransports(false);
 }]);
 app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scope, $http, $sce, $socket) {
