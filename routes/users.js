@@ -16,7 +16,7 @@ router.post('/', function(req, res, next) {
 			if (!existing_user) {
 				var user = new User(req.body);
 				var board = new Board({
-					name: "Your clipboard"
+					name: user.first_name + "'s private clipboard"
 				});
 				user.primary_board = board;
 				

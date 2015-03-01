@@ -23,6 +23,12 @@
 	<!-- App logic controller -->
 	<script src="/javascripts/angular-socket.js"></script>
 	<script src="/javascripts/index_app.js"></script>
+	
+	<style>
+	.board-field {
+		color: rgba(150, 150, 150, 1);
+	}
+	</style>
 </head>
 <body ng-app="app" ng-controller="MainCtrl">
 	<div class="page-header">
@@ -30,17 +36,28 @@
 	</div>
 	<br>
 	<div class="container-fluid" style="text-align: center;">
-		<div class="panel panel-default" style="margin: 0 auto; text-align: center; margin-bottom: 20px; display: inline-block; float: none;">
+		<div class="panel panel-default" style="margin: 0 auto; text-align: center; display: inline-block; float: none;">
 			<div class="panel-body" style="padding: 10px;">
 				<a class="btn btn-default" href="#" role="button" title="Logout" ng-click="logout()"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a>
 			</div>
 		</div>
-		<div class="panel panel-default" style="cursor: pointer; text-align: left;" ng-repeat="board in boards | orderBy:'name'" ng-click="openBoard(board._id)">
+		<hr>
+		<div class="panel panel-default" style="cursor: pointer; text-align: left;" ng-click="openBoard(primaryBoard._id)">
 			<div class="panel-heading">
-				<h3 class="panel-title">{{board.name}}</h3>
+				<h3 class="panel-title"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{primaryBoard.name}}</h3>
 			</div>
 			<div class="panel-body">
-				<span ng-repeat="member in board.members">{{member}}<br></span>
+				<p><span class="board-field"># of clips:</span> {{primaryBoard.clips.length}}</p>
+			</div>
+		</div>
+		<hr>
+		<div class="panel panel-default" style="cursor: pointer; text-align: left;" ng-repeat="board in secondaryBoards | orderBy:'name'" ng-click="openBoard(board._id)">
+			<div class="panel-heading">
+				<h3 class="panel-title"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span> {{board.name}}</h3>
+			</div>
+			<div class="panel-body">
+				<p><span class="board-field">Users:</span> <span ng-repeat="user in board.users">{{user}} </span></p>
+				<p><span class="board-field"># of clips:</span> {{board.clips.length}}</p>
 			</div>
 		</div>
 	</div>
