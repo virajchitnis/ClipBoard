@@ -109,7 +109,6 @@ router.get('/:token', function(req, res) {
 					
 					if (boards && boards.length > 0) {
 						for (var i = 0; i < boards.length; i++) {
-							console.log(boards[i]);
 							req.user.secondary_boards.push(boards[i]);
 						}
 					}

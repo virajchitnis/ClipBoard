@@ -103,29 +103,60 @@ router.get('/clipboard/:board', function(req, res, next) {
 					if (err) return next(err);
 				
 					if (user) {
-						returnClipBoardPage();
+						user.populate('primary_board', function(err, board) {
+							user.populate('secondary_boards', function(err, board) {
+								Board.find({ users: user.email }, function(err, boards) {
+									if(err) { return next(err); }
+									
+									if (req.board._id.equals(user.primary_board._id)) {
+										returnClipBoardPage();
+									}
+									else {
+										if (boards && boards.length > 0) {
+											for (var i = 0; i < boards.length; i++) {
+												user.secondary_boards.push(boards[i]);
+											}
+										}
+										
+										var authorizedOrNot = false;
+										for (var i = 0; i < user.secondary_boards.length; i++) {
+											if (req.board._id.equals(user.secondary_boards[i]._id)) {
+												authorizedOrNot = true;
+											}
+										}
+										
+										if (authorizedOrNot) {
+											returnClipBoardPage();
+										}
+										else {
+											returnIndexPage();
+										}
+									}
+								});
+							});
+						});
 					}
 					else {
-						returnLoginPage();
+						returnIndexPage();
 					}
 				});
 			}
 			else {
-				returnLoginPage();
+				returnIndexPage();
 			}
 		});
 	}
 	else {
-		returnLoginPage();
+		returnIndexPage();
 	}
 	
 	function returnClipBoardPage() {
 		res.render('clipboard', { title: req.board.name + ' - ClipBoard' });
 	}
 	
-	function returnLoginPage() {
+	function returnIndexPage() {
 		res.status(401);
-		res.send("<script type='text/javascript'>window.location.replace('/login');</script>");
+		res.send("<script type='text/javascript'>window.location.replace('/');</script>");
 	}
 });
 
