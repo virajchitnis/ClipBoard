@@ -5,6 +5,8 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Board = require('../models/Board.js');
 var Clip = require('../models/Clip.js');
+var Login = require('../models/Login.js');
+var User = require('../models/User.js');
 
 /* PARAM (method) for retrieving a board by its id */
 router.param('board', function(req, res, next, id) {
@@ -57,7 +59,63 @@ router.post('/:board/clips', function(req, res, next) {
 	var clip = new Clip(req.body);
 	clip.board = req.board;
 	
-	if (req.board.members.indexOf(clip.owner) >= 0) {
+	if (req.cookies.token) {
+		Login.findById(req.cookies.token, function (err, login) {
+			if (err) return next(err);
+			
+			if (login && !login.logout_date) {
+				User.findOne({ 'email': login.email }, function(err, user) {
+					if (err) return next(err);
+				
+					if (user) {
+						user.populate('primary_board', function(err, board) {
+							user.populate('secondary_boards', function(err, board) {
+								Board.find({ users: user.email }, function(err, boards) {
+									if(err) { return next(err); }
+									
+									if (req.board._id.equals(user.primary_board._id)) {
+										addClip();
+									}
+									else {
+										if (boards && boards.length > 0) {
+											for (var i = 0; i < boards.length; i++) {
+												user.secondary_boards.push(boards[i]);
+											}
+										}
+										
+										var authorizedOrNot = false;
+										for (var i = 0; i < user.secondary_boards.length; i++) {
+											if (req.board._id.equals(user.secondary_boards[i]._id)) {
+												authorizedOrNot = true;
+											}
+										}
+										
+										if (authorizedOrNot) {
+											addClip();
+										}
+										else {
+											returnError();
+										}
+									}
+								});
+							});
+						});
+					}
+					else {
+						returnError();
+					}
+				});
+			}
+			else {
+				returnError();
+			}
+		});
+	}
+	else {
+		returnError();
+	}
+	
+	function addClip() {
 		clip.save(function(err, clip){
 			if(err){ return next(err); }
 
@@ -72,7 +130,8 @@ router.post('/:board/clips', function(req, res, next) {
 			});
 		});
 	}
-	else {
+	
+	function returnError() {
 		res.json({ error: "Invalid owner (error code 001)." });
 	}
 });
