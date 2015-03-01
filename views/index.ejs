@@ -29,8 +29,13 @@
 		<h1><%= title %> <small>by Viraj Chitnis</small></h1>
 	</div>
 	<br>
-	<div class="container-fluid">
-		<div class="panel panel-default" style="cursor: pointer;" ng-repeat="board in boards | orderBy:'name'" ng-click="openBoard(board._id)">
+	<div class="container-fluid" style="text-align: center;">
+		<div class="panel panel-default" style="margin: 0 auto; text-align: center; margin-bottom: 20px; display: inline-block; float: none;">
+			<div class="panel-body" style="padding: 10px;">
+				<a class="btn btn-default" href="#" role="button" title="Logout" ng-click="logout()"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a>
+			</div>
+		</div>
+		<div class="panel panel-default" style="cursor: pointer; text-align: left;" ng-repeat="board in boards | orderBy:'name'" ng-click="openBoard(board._id)">
 			<div class="panel-heading">
 				<h3 class="panel-title">{{board.name}}</h3>
 			</div>

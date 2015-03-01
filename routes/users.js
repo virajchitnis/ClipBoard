@@ -203,7 +203,7 @@ router.post('/login', function(req, res, next) {
 /* POST mark the provided token as logged out. */
 router.post('/logout', function(req, res, next) {
 	var currDateTime = Date.now();
-	Login.findByIdAndUpdate(req.body.token, { logout_date: currDateTime }, function(err, login) {
+	Login.findByIdAndUpdate(req.cookies.token, { logout_date: currDateTime }, function(err, login) {
 		if(err){ return next(err); }
 		
 		if (login) {

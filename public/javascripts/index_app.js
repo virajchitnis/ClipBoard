@@ -23,4 +23,19 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	$scope.openBoard = function(id) {
 		window.location = "/clipboard/" + id;
 	};
+	
+	$scope.logout = function() {
+		$http.post('/users/logout', {}).
+		success(function(data, status, headers, config) {
+			var response = data;
+			if (response.success) {
+				$.removeCookie("token");
+				$.removeCookie("username");
+				window.location = "/login";
+			}
+			else {
+				alert("Error, please try again.");
+			}
+		});
+	};
 }]);
