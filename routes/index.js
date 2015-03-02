@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var configJSON = require('../config.json');
 
 // MongoDB setup
 var mongoose = require('mongoose');
@@ -47,7 +48,7 @@ router.get('/', function(req, res, next) {
 	}
 	
 	function returnIndexPage() {
-		res.render('index', { title: 'ClipBoard' });
+		res.render('index', { title: 'ClipBoard', deployment: configJSON.deployment });
 	}
 	
 	function returnLoginPage() {
@@ -88,7 +89,7 @@ router.get('/login', function(req, res, next) {
 	}
 	
 	function returnLoginPage() {
-		res.render('login', { title: 'ClipBoard' });
+		res.render('login', { title: 'ClipBoard', deployment: configJSON.deployment });
 	}
 });
 
@@ -151,7 +152,7 @@ router.get('/clipboard/:board', function(req, res, next) {
 	}
 	
 	function returnClipBoardPage() {
-		res.render('clipboard', { title: req.board.name + ' - ClipBoard' });
+		res.render('clipboard', { title: req.board.name + ' - ClipBoard', deployment: configJSON.deployment });
 	}
 	
 	function returnIndexPage() {
