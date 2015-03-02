@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var request = require('request');
+var configJSON = require('../config.json');
 
 // MongoDB setup
 var mongoose = require('mongoose');
@@ -240,6 +242,17 @@ router.post('/logout', function(req, res, next) {
 			});
 		}
 	});
+});
+
+/* POST check the user's reCAPTCHA response. */
+router.post('/captcha', function(req, res, next) {
+	var userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	var secretKey = configJSON.recaptcha_private_key;
+	request('https://www.google.com/recaptcha/api/siteverify?secret=' + secretKey + '&response=' + req.body.captchaResponse + '&remoteip=' + userIP, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			res.json(body);
+		}
+	})
 });
 
 module.exports = router;

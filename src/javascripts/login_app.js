@@ -116,59 +116,80 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	};
 	
 	$scope.submitNewUser = function() {
-		if (($scope.firstNameCSSClasses == "") && ($scope.lastNameCSSClasses == "") && ($scope.emailCSSClasses == "") && ($scope.passwordCSSClasses == "")) {
-			var user = {
-				email: $scope.email,
-				first_name: $scope.firstName,
-				last_name: $scope.lastName,
-				password: $scope.password
-			}
-		
-			$scope.responseTitle = "Please wait...";
-			$scope.responseMessage = "Verifying info and creating user account...";
-			$scope.responseMessageClosable = false;
-		
-			$('#login-progress-modal').modal({
-				backdrop: 'static',
-				keyboard: false,
-				show: true
-			});
-		
-			$http.post('/users', user).
+		var captchaResponse = grecaptcha.getResponse();
+		if (captchaResponse != "") {
+			$http.post('/users/captcha', { captchaResponse: captchaResponse }).
 			success(function(data, status, headers, config) {
-				var response = data;
-				if (response.success) {
-					$('#login-progress-modal').modal('hide');
-					$('#signup-modal').modal('hide');
+				var captchaCheck = JSON.parse(data);
+				
+				if (captchaCheck.success) {
+					if (($scope.firstNameCSSClasses == "") && ($scope.lastNameCSSClasses == "") && ($scope.emailCSSClasses == "") && ($scope.passwordCSSClasses == "")) {
+						var user = {
+							email: $scope.email,
+							first_name: $scope.firstName,
+							last_name: $scope.lastName,
+							password: $scope.password
+						}
+		
+						$scope.responseTitle = "Please wait...";
+						$scope.responseMessage = "Verifying info and creating user account...";
+						$scope.responseMessageClosable = false;
+		
+						$('#login-progress-modal').modal({
+							backdrop: 'static',
+							keyboard: false,
+							show: true
+						});
+		
+						$http.post('/users', user).
+						success(function(data, status, headers, config) {
+							var response = data;
+							if (response.success) {
+								$('#login-progress-modal').modal('hide');
+								$('#signup-modal').modal('hide');
 					
-					$scope.firstName = "";
-					$scope.firstNameCSSClasses = "has-error";
-					$scope.firstNameGlyphicon = "glyphicon-remove";
-					$scope.lastName = "";
-					$scope.lastNameCSSClasses = "has-error";
-					$scope.lastNameGlyphicon = "glyphicon-remove";
-					$scope.email = "";
-					$scope.emailCSSClasses = "has-error";
-					$scope.emailGlyphicon = "glyphicon-remove";
-					$scope.password = "";
-					$scope.passwordCSSClasses = "has-error";
-					$scope.passwordGlyphicon = "glyphicon-remove";
-					$scope.passwordRepeat = "";
-					$scope.passwordRepeatCSSClasses = "has-error";
-					$scope.passwordRepeatGlyphicon = "glyphicon-remove";
-				}
-				else {
-					$scope.responseTitle = "Error";
-					$scope.responseMessage = response.message;
-					$scope.responseMessageClosable = true;
+								$scope.firstName = "";
+								$scope.firstNameCSSClasses = "has-error";
+								$scope.firstNameGlyphicon = "glyphicon-remove";
+								$scope.lastName = "";
+								$scope.lastNameCSSClasses = "has-error";
+								$scope.lastNameGlyphicon = "glyphicon-remove";
+								$scope.email = "";
+								$scope.emailCSSClasses = "has-error";
+								$scope.emailGlyphicon = "glyphicon-remove";
+								$scope.password = "";
+								$scope.passwordCSSClasses = "has-error";
+								$scope.passwordGlyphicon = "glyphicon-remove";
+								$scope.passwordRepeat = "";
+								$scope.passwordRepeatCSSClasses = "has-error";
+								$scope.passwordRepeatGlyphicon = "glyphicon-remove";
+							}
+							else {
+								$scope.responseTitle = "Error";
+								$scope.responseMessage = response.message;
+								$scope.responseMessageClosable = true;
+							}
+						});
+					}
+					else {
+						$scope.responseTitle = "Error";
+						$scope.responseMessage = "Please fill out all the fields in the form and make sure they are check marked.";
+						$scope.responseMessageClosable = true;
+			
+						$('#login-progress-modal').modal({
+							backdrop: 'static',
+							keyboard: false,
+							show: true
+						});
+					}
 				}
 			});
 		}
 		else {
 			$scope.responseTitle = "Error";
-			$scope.responseMessage = "Please fill out all the fields in the form and make sure they are check marked.";
+			$scope.responseMessage = "reCAPTCHA verification failed, please try again.";
 			$scope.responseMessageClosable = true;
-			
+
 			$('#login-progress-modal').modal({
 				backdrop: 'static',
 				keyboard: false,
