@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var request = require('request');
+var cheerio = require('cheerio');
 
 // MongoDB setup
 var mongoose = require('mongoose');
@@ -130,9 +132,6 @@ router.get('/:board', function(req, res) {
 
 /* POST (add) a new clip */
 router.post('/:board/clips', function(req, res, next) {
-	var clip = new Clip(req.body);
-	clip.board = req.board;
-	
 	if (req.board) {
 		if (req.cookies.token) {
 			Login.findById(req.cookies.token, function (err, login) {
@@ -195,6 +194,43 @@ router.post('/:board/clips', function(req, res, next) {
 	}
 	
 	function addClip() {
+		var clip = new Clip(req.body);
+		clip.board = req.board;
+		
+		if (clip.type == "webclip") {
+			req.board.populate('clips', function(err, pop_clip) {
+				var clipsWithSameURL = req.board.clips.filter(function(curr_clip) {
+					return curr_clip.body == clip.body;
+				});
+				
+				if (clipsWithSameURL.length == 0) {
+					request(clip.body, function (error, response, body) {
+						if (!error && response.statusCode == 200) {
+							$ = cheerio.load(body);
+							clip.title = $('title').text();
+							saveClip(clip);
+						}
+					});
+				}
+				else {
+					var ret = {
+						title: "Duplicate URL",
+						message: "The URL you entered is already on this clipboard, please search for it using the search bar."
+					};
+					
+					var socketio = req.app.get('socketio');
+					socketio.sockets.emit('clip.webclip.exists.' + req.board._id, ret);
+					
+					res.json(ret);
+				}
+			});
+		}
+		else {
+			saveClip(clip);
+		}
+	}
+	
+	function saveClip(clip) {
 		clip.save(function(err, clip){
 			if(err){ return next(err); }
 
@@ -217,7 +253,6 @@ router.post('/:board/clips', function(req, res, next) {
 
 /* POST (add) a new git clip */
 router.post('/:board/git', function(req, res, next) {
-	console.log(req.body);
 	var received = {
 		owner: req.body.pull_request.user.login,
 		body: "<h5>" + req.body.action + " pull request <a href=\"" + req.body.pull_request.html_url + "\">#" + req.body.number + "</a></h5><p>" + req.body.pull_request.title + "</p>",

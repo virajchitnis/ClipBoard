@@ -64,6 +64,7 @@
 		<div ng-repeat="clip in board.clips | filter:clipSearch">
 			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
 			<pre ng-if="!clip.type"><code>{{clip.body}}</code></pre>
+			<a ng-if="clip.type && clip.type == 'webclip'" href="{{clip.body}}"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> {{clip.body}}</a>
 			<div ng-if="clip.type && clip.type == 'git'" class="row">
 				<div class="col-md-2">
 					<img src="/images/github_logo.png" width="77">
@@ -106,6 +107,22 @@
 	
 	<div class="container-fluid" style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(255,255,255,0.9); border-top: 1px solid #ccc; padding: 10px; z-index: 10;">
 		<textarea id="textAreaPaste" class="form-control" rows="1" placeholder="Paste here and then press Shift+Enter to post or press Escape to cancel&hellip;" ng-model="textentry" ng-shift-enter="saveEnteredText()" ng-esc="leaveTextArea()" style="height: 34px; resize: none;"></textarea>
+	</div>
+	
+	<div class="modal fade" id="alert-modal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">{{alertTitle}}</h4>
+				</div>
+				<div class="modal-body">
+					<p>{{alertMessage}}</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<!-- jQuery -->

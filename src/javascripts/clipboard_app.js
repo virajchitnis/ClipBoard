@@ -73,6 +73,13 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		$scope.username = getCookie("username");
 	}
 	
+	$socket.on('clip.webclip.exists.' + $scope.board_id, function (data) {
+		$scope.alertTitle = data.title;
+		$scope.alertMessage = data.message;
+		
+		$('#alert-modal').modal('show');
+	});
+	
 	$socket.on('clip.added.' + $scope.board_id, function (data) {
 		var scrollPosition = $(document).scrollTop();
 		var pageHeight = $(document).height() - $(window).height();
@@ -115,10 +122,19 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		
 		var clip;
 		if (textarea.length > 1) {
-			clip = {
-				title: textarea[0],
-				owner: getCookie("username"),
-				body: textarea[1]
+			if ((textarea[0] == "[URL]") || (textarea[0] == "[url]")) {
+				clip = {
+					owner: getCookie("username"),
+					body: textarea[1],
+					type: "webclip"
+				}
+			}
+			else {
+				clip = {
+					title: textarea[0],
+					owner: getCookie("username"),
+					body: textarea[1]
+				}
 			}
 		}
 		else {
