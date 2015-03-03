@@ -141,7 +141,8 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		else {
 			clip = {
 				owner: getCookie("username"),
-				body: textarea[0]
+				body: textarea[0],
+				type: "textclip"
 			}
 		}
 		
