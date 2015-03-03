@@ -197,13 +197,21 @@ router.post('/:board/clips', function(req, res, next) {
 		var clip = new Clip(req.body);
 		clip.board = req.board;
 		
-		if (clip.type == "webclip") {
-			req.board.populate('clips', function(err, pop_clip) {
-				var clipsWithSameURL = req.board.clips.filter(function(curr_clip) {
-					return curr_clip.body == clip.body;
-				});
-				
-				if (clipsWithSameURL.length == 0) {
+		req.board.populate('clips', function(err, pop_clip) {
+			var clipsWithSameBody = req.board.clips.filter(function(curr_clip) {
+				return curr_clip.body == clip.body;
+			});
+			
+			if (clipsWithSameBody.length > 0) {
+				if (clip.type == "webclip") {
+					sendSocketError("Duplicate URL", "The URL you entered is already on this clipboard, please search for it using the search bar.");
+				}
+				else {
+					sendSocketError("Duplicate clip", "The clip you entered is already on this clipboard, please search for it using the search bar.");
+				}
+			}
+			else {
+				if (clip.type == "webclip") {
 					request(clip.body, function (error, response, body) {
 						if (!error && response.statusCode == 200) {
 							$ = cheerio.load(body);
@@ -213,21 +221,10 @@ router.post('/:board/clips', function(req, res, next) {
 					});
 				}
 				else {
-					var ret = {
-						title: "Duplicate URL",
-						message: "The URL you entered is already on this clipboard, please search for it using the search bar."
-					};
-					
-					var socketio = req.app.get('socketio');
-					socketio.sockets.emit('clip.webclip.exists.' + req.board._id, ret);
-					
-					res.json(ret);
+					saveClip(clip);
 				}
-			});
-		}
-		else {
-			saveClip(clip);
-		}
+			}
+		});
 	}
 	
 	function saveClip(clip) {
@@ -244,6 +241,18 @@ router.post('/:board/clips', function(req, res, next) {
 				res.json(clip);
 			});
 		});
+	}
+	
+	function sendSocketError(title, message) {
+		var ret = {
+			title: title,
+			message: message
+		};
+		
+		var socketio = req.app.get('socketio');
+		socketio.sockets.emit('clip.exists.' + req.board._id, ret);
+		
+		res.json(ret);
 	}
 	
 	function returnError(msg) {

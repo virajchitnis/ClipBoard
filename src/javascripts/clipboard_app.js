@@ -73,7 +73,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		$scope.username = getCookie("username");
 	}
 	
-	$socket.on('clip.webclip.exists.' + $scope.board_id, function (data) {
+	$socket.on('clip.exists.' + $scope.board_id, function (data) {
 		$scope.alertTitle = data.title;
 		$scope.alertMessage = data.message;
 		
@@ -133,7 +133,8 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 				clip = {
 					title: textarea[0],
 					owner: getCookie("username"),
-					body: textarea[1]
+					body: textarea[1],
+					type: "textclip"
 				}
 			}
 		}

@@ -64,7 +64,7 @@
 		<div ng-repeat="clip in board.clips | filter:clipSearch">
 			<h4>{{clip.title}} <small>{{clip.owner}} <small>{{clip.time | date:"hh:mm a ', ' MMM d yyyy"}}</small></small></h4>
 			<pre ng-if="!clip.type"><code>{{clip.body}}</code></pre>
-			<a ng-if="clip.type && clip.type == 'webclip'" href="{{clip.body}}"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> {{clip.body}}</a>
+			<a ng-if="clip.type && clip.type == 'webclip'" href="{{clip.body}}" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> {{clip.body}}</a>
 			<div ng-if="clip.type && clip.type == 'git'" class="row">
 				<div class="col-md-2">
 					<img src="/images/github_logo.png" width="77">
