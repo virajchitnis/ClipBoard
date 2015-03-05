@@ -11,50 +11,69 @@ var Board = require('../models/Board.js');
 
 /* POST add a new user. */
 router.post('/', function(req, res, next) {
-	if (validateEmail(req.body.email) && validatePassword(req.body.password) && (req.body.first_name.length >= 2) && (req.body.last_name.length >= 2)) {
-		User.findOne({ 'email': req.body.email }, function(err, existing_user) {
-			if(err){ return next(err); }
+	var userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	var secretKey = configJSON.recaptcha_private_key;
+	request('https://www.google.com/recaptcha/api/siteverify?secret=' + secretKey + '&response=' + req.body.captchaResponse + '&remoteip=' + userIP, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			var captchaCheck = JSON.parse(body);
+			
+			if (captchaCheck.success) {
+				if (validateEmail(req.body.email) && validatePassword(req.body.password) && (req.body.first_name.length >= 2) && (req.body.last_name.length >= 2)) {
+					User.findOne({ 'email': req.body.email }, function(err, existing_user) {
+						if(err){ return next(err); }
 		
-			if (!existing_user) {
-				var user = new User(req.body);
-				var board = new Board({
-					name: user.first_name + "'s private clipboard"
-				});
-				user.primary_board = board;
+						if (!existing_user) {
+							var recdUser = {
+								email: req.body.email,
+								password: req.body.password,
+								first_name: req.body.first_name,
+								last_name: req.body.last_name
+							};
+							var user = new User(recdUser);
+							var board = new Board({
+								name: user.first_name + "'s private clipboard"
+							});
+							user.primary_board = board;
 				
-				board.save(function(err, board) {
-					if(err){ return next(err); }
+							board.save(function(err, board) {
+								if(err){ return next(err); }
 					
-					if (board) {
-						user.save(function(err, user) {
-							if(err){ return next(err); }
+								if (board) {
+									user.save(function(err, user) {
+										if(err){ return next(err); }
 					
-							if (user) {
-								var ret = {
-									email: user.email,
-									success: true
-								};
+										if (user) {
+											var ret = {
+												email: user.email,
+												success: true
+											};
 	
-								res.json(ret);
-							}
-							else {
-								returnFailure("Error 004: User could not be created.");
-							}
-						});
-					}
-					else {
-						returnFailure("Error 003: User's primary board could not be created.");
-					}
-				});
+											res.json(ret);
+										}
+										else {
+											returnFailure("Error 004: User could not be created.");
+										}
+									});
+								}
+								else {
+									returnFailure("Error 003: User's primary board could not be created.");
+								}
+							});
+						}
+						else {
+							returnFailure("Error 002: Account with selected email exists.");
+						}
+					});
+				}
+				else {
+					returnFailure("Error 001: Please fill out all the fields in the form and make sure they are check marked.");
+				}
 			}
 			else {
-				returnFailure("Error 002: Account with selected email exists.");
+				returnFailure("Error 007: reCAPTCHA verification failed, please try again.");
 			}
-		});
-	}
-	else {
-		returnFailure("Error 001: Please fill out all the fields in the form and make sure they are check marked.");
-	}
+		}
+	});
 	
 	function validateEmail(email) {
 		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
