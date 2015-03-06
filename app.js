@@ -35,6 +35,9 @@ var users = require('./routes/users');
 
 var app = express();
 
+// Disable x-powered-by header
+app.disable('x-powered-by');
+
 // Morgan setup
 app.enable('trust proxy');
 var morgan = require('morgan');
