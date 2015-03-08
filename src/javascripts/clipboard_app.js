@@ -52,17 +52,14 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	
 	$http.get('/boards/' + $scope.board_id).success(function(data) {
 		$scope.board = data;
+		
+		setTimeout( function() {
+			$('pre code').each(function(i, block) {
+				hljs.highlightBlock(block);
+			});
+			$('html, body').animate({scrollTop: $(document).height()}, 1000);
+		}, 150);
 	});
-	
-	setTimeout( function() {
-		$('html, body').animate({scrollTop: $(document).height()}, 1000);
-	}, 500);
-	
-	setTimeout( function() {
-		$('pre code').each(function(i, block) {
-			hljs.highlightBlock(block);
-		});
-	}, 150);
 	
 	if (getCookie("username") == "") {
 		setTimeout( function() {
