@@ -50,7 +50,7 @@ app.config(['$socketProvider', function ($socketProvider) {
 app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scope, $http, $sce, $socket) {
 	$scope.board_id = document.URL.split("/").pop();
 	
-	var localStorageBoard = $.jStorage.get('board');
+	var localStorageBoard = $.jStorage.get('board' + $scope.board_id);
 	if (localStorageBoard) {
 		$scope.board = localStorageBoard;
 		
@@ -63,10 +63,10 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		
 		setTimeout(function() {
 			$http.get('/boards/' + $scope.board_id).success(function(data) {
-				var localStorageBoard = $.jStorage.get('board');
+				var localStorageBoard = $.jStorage.get('board' + $scope.board_id);
 				if (localStorageBoard) {
 					if (localStorageBoard.clips.length != data.clips.length) {
-						$.jStorage.set('board', data);
+						$.jStorage.set('board' + $scope.board_id, data);
 						$scope.board = data;
 		
 						setTimeout(function() {
@@ -82,7 +82,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 	}
 	else {
 		$http.get('/boards/' + $scope.board_id).success(function(data) {
-			$.jStorage.set('board', data);
+			$.jStorage.set('board' + $scope.board_id, data);
 			$scope.board = data;
 		
 			setTimeout(function() {
