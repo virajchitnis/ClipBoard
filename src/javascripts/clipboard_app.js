@@ -50,16 +50,49 @@ app.config(['$socketProvider', function ($socketProvider) {
 app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scope, $http, $sce, $socket) {
 	$scope.board_id = document.URL.split("/").pop();
 	
-	$http.get('/boards/' + $scope.board_id).success(function(data) {
-		$scope.board = data;
+	var localStorageBoard = $.jStorage.get('board');
+	if (localStorageBoard) {
+		$scope.board = localStorageBoard;
 		
-		setTimeout( function() {
+		setTimeout(function() {
 			$('pre code').each(function(i, block) {
 				hljs.highlightBlock(block);
 			});
 			$('html, body').animate({scrollTop: $(document).height()}, 1000);
 		}, 150);
-	});
+		
+		setTimeout(function() {
+			$http.get('/boards/' + $scope.board_id).success(function(data) {
+				var localStorageBoard = $.jStorage.get('board');
+				if (localStorageBoard) {
+					if (localStorageBoard.clips.length != data.clips.length) {
+						$.jStorage.set('board', data);
+						$scope.board = data;
+		
+						setTimeout(function() {
+							$('pre code').each(function(i, block) {
+								hljs.highlightBlock(block);
+							});
+							$('html, body').animate({scrollTop: $(document).height()}, 1000);
+						}, 150);
+					}
+				}
+			});
+		}, 2000);
+	}
+	else {
+		$http.get('/boards/' + $scope.board_id).success(function(data) {
+			$.jStorage.set('board', data);
+			$scope.board = data;
+		
+			setTimeout(function() {
+				$('pre code').each(function(i, block) {
+					hljs.highlightBlock(block);
+				});
+				$('html, body').animate({scrollTop: $(document).height()}, 1000);
+			}, 150);
+		});
+	}
 	
 	if (getCookie("username") == "") {
 		setTimeout( function() {
@@ -86,14 +119,14 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 		clips.push(data);
 		$scope.board.clips = clips;
 		
-		setTimeout( function() {
+		setTimeout(function() {
 			$('pre code').each(function(i, block) {
 				hljs.highlightBlock(block);
 			});
 		}, 150);
 		
 		if (scrollOrNot || (data.owner == getCookie("username"))) {
-			setTimeout( function() {
+			setTimeout(function() {
 				$('html, body').animate({scrollTop: $(document).height()}, 1000);
 			}, 150);
 		}
