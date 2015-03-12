@@ -58,27 +58,27 @@ app.controller('MainCtrl', ['$scope', '$http', '$sce', '$socket', function($scop
 			$('pre code').each(function(i, block) {
 				hljs.highlightBlock(block);
 			});
-			$('html, body').animate({scrollTop: $(document).height()}, 1000);
-		}, 150);
+			$('html, body').animate({scrollTop: $(document).height()}, 1000, function() {
+				setTimeout(function() {
+					$http.get('/boards/' + $scope.board_id).success(function(data) {
+						var localStorageBoard = $.jStorage.get('board' + $scope.board_id);
+						if (localStorageBoard) {
+							if (localStorageBoard.clips.length != data.clips.length) {
+								$.jStorage.set('board' + $scope.board_id, data);
+								$scope.board.clips = data.clips;
 		
-		setTimeout(function() {
-			$http.get('/boards/' + $scope.board_id).success(function(data) {
-				var localStorageBoard = $.jStorage.get('board' + $scope.board_id);
-				if (localStorageBoard) {
-					if (localStorageBoard.clips.length != data.clips.length) {
-						$.jStorage.set('board' + $scope.board_id, data);
-						$scope.board = data;
-		
-						setTimeout(function() {
-							$('pre code').each(function(i, block) {
-								hljs.highlightBlock(block);
-							});
-							$('html, body').animate({scrollTop: $(document).height()}, 1000);
-						}, 150);
-					}
-				}
+								setTimeout(function() {
+									$('pre code').each(function(i, block) {
+										hljs.highlightBlock(block);
+									});
+									$('html, body').animate({scrollTop: $(document).height()}, 1000);
+								}, 150);
+							}
+						}
+					});
+				}, 2000);
 			});
-		}, 2000);
+		}, 150);
 	}
 	else {
 		$http.get('/boards/' + $scope.board_id).success(function(data) {
